@@ -1,0 +1,55 @@
+# ▶️ Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.sqlite3
+*.db
+*.log
+
+# ▶️ 환경 설정
+.env
+.env.*
+!.env.sample
+
+# ▶️ VSCode & IDE
+.vscode/
+.idea/
+*.swp
+
+# ▶️ Alembic
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+
+# ▶️ Docker
+*.pid
+*.tar
+docker-compose.override.yml
+
+# ▶️ Build & Cache
+*.egg
+build/
+dist/
+.eggs/
+*.bak
+*.tmp
+*.DS_Store
+
+# ▶️ pytest
+htmlcov/
+.tox/
+.coverage
+.cache/
+.pytest_cache/
+
+# ▶️ mypy & pylint
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# 가상환경 폴더
+env/
+.venv/
+venv/

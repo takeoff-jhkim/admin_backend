@@ -1,0 +1,33 @@
+{
+  "name": "FastAPI Dev Container with Docker",
+  "dockerComposeFile": ["../compose.yaml"],
+  "service": "web",
+  "workspaceFolder": "/workspace",
+  "runServices": ["web", "db"],
+  "forwardPorts": [8000, 5432],
+  "portsAttributes": {
+    "8000": {
+      "label": "FastAPI API",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL DB",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker"  // 🐳 Docker 확장 추천
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+  "postCreateCommand": "pip install -r requirements.txt",
+  "remoteUser": "root"  // 🔑 docker.sock 쓰려면 root 권한 필요 개발때 사용
+}

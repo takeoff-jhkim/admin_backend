@@ -1,21 +1,39 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from app import models
-from .. import crud, schemas
-from ..utils.security import create_access_token, get_password_hash, get_current_user
-from ..models import User
+from app import models, crud, schemas
+from app.utils.security import create_access_token, get_password_hash, get_current_user
 from app.database import get_db
+from typing import Optional
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-@router.get("/users", response_model=list[schemas.UserOut])
+@router.get("/users", response_model=schemas.UserListResponse)
 def read_users(
+    page: int = Query(1, ge=1),
+    size: int = Query(20,ge=1,le=100),
+    order: Optional[str] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)):
-        if current_user.role == "admin":
-            return crud.get_all_users(db)
-        else:
-            raise HTTPException(status_code=403, detail="Only Admin")
+):
+    all_users = crud.get_all_users(db, order=order)
+    
+    total_items = len(all_users)
+    total_pages = (total_items + size - 1) // size
+    has_next = page < total_pages
+
+    start = (page - 1) * size
+    end = start + size
+    paginated_users = all_users[start:end]
+        
+    return schemas.UserListResponse(
+        paging=schemas.PagingInfo(
+        page=page,
+        size=size,
+        totalItems=total_items,
+        totalPages=total_pages,
+        hasNext=has_next,
+    ),
+    users=[schemas.UserOut.model_validate(user) for user in paginated_users]
+)
 
 @router.patch("/users/{user_id}", response_model=schemas.UserOut)
 def change_user_role(user_id: int, body: schemas.UpdateUserRole, db: Session = Depends(get_db)):
